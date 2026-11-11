@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "plugin-platform-copilot"
-version = "0.1.0"  # the plugin's own release (CHANGELOG.md); the app shows it on the Plugins view
+version = "0.2.0"  # the plugin's own release (CHANGELOG.md); the app shows it on the Plugins view
 description = "Copilot for Liminal: GitHub Copilot's models through GitHub's Copilot SDK, evaluating standardized arguments on your own GitHub token, with the plans, models and prices written in."
 readme = "README.md"
 requires-python = ">=3.11"  # the Copilot SDK's own floor
-# the library it plugs into (the AI assistant kind: liminal_libs.assistants, plugin API 2.0); 1.33.0: its icon
-dependencies = ["liminal-libs>=1.33.0"]
+# the library it plugs into (the AI assistant kind: liminal_libs.assistants, plugin API 2.2); 1.49.0: its cards
+dependencies = ["liminal-libs>=1.49.0"]
 
 [project.optional-dependencies]
 # GitHub's Copilot SDK: what reaches Copilot (it runs Copilot's runtime; fetch that once with

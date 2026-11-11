@@ -1,10 +1,11 @@
-"""Copilot (GitHub) for Liminal: an AI assistant plugin (liminal_libs.assistants, plugin API 2.0) that
+"""Copilot (GitHub) for Liminal: an AI assistant plugin (liminal_libs.assistants, plugin API 2.2) that
 evaluates standardized arguments through GitHub Copilot on your own GitHub token, by GitHub's Copilot
 SDK, with Copilot's plans, models and prices written in, dated, and checked against GitHub's pages.
 
 A Liminal plugin released on its own, registered under the entry point group `liminal.providers` as
 `copilot`: the plugin `CopilotPlugin` (ASSISTANT below), its assistant `CopilotAssistant`
-(assistant.py), the SDK driven by runtime.py. It relies on plugin API 2.0 and nothing of the apps.
+(assistant.py), the SDK driven by runtime.py, what it attaches to its cards (apis.py: the Copilot SDK, what it
+reaches and the runtime it drives, their pages). It relies on plugin API 2.2 and nothing of the apps.
 
 The user, 2026-11-08: "also add an AI plugin for Copilot", beside the three asked for on 2026-11-03:
 "AI plugins that have a vanilla API, are compliant with the rest of the plugin structure (setup /
@@ -49,11 +50,12 @@ from liminal_libs.assistants import AssistantPlugin, Caps, Model, Plan, Source, 
 from liminal_libs.layout import Database
 from liminal_libs.sources.keys import KeyVar
 
+from .apis import APIS, MODELS_PAGE, PLANS_PAGE, PRICING
 from .assistant import AUTO, CopilotAssistant
 from .runtime import SDK_WRITTEN_FOR, SdkRuntime
 
 __all__ = ["ASSISTANT", "CopilotPlugin", "CopilotAssistant", "PLANS", "MODELS", "SOURCES", "VERIFIED", "AUTO",
-           "INDIVIDUAL", "ORGANIZATION", "PRICING", "PLANS_PAGE", "MODELS_PAGE", "RUNTIME_HOME", "SDK_WRITTEN_FOR"]
+           "INDIVIDUAL", "ORGANIZATION", "PRICING", "PLANS_PAGE", "MODELS_PAGE", "RUNTIME_HOME", "SDK_WRITTEN_FOR", "APIS"]
 
 VERIFIED = "2026-11-08"  # the day the tables below were checked against SOURCES
 RUNTIME_HOME = "assistants/copilot/"  # the Copilot runtime's home (COPILOT_HOME), in the data folder
@@ -168,9 +170,7 @@ MODELS = (
     Model("claude-fable-5.1", "Claude Fable 5.1", 10.00, 50.00, 0.25, MILLION, PREMIUM, True, note=FABLE),
 )
 
-PRICING = "https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing"
-PLANS_PAGE = "https://docs.github.com/en/copilot/get-started/plans"
-MODELS_PAGE = "https://docs.github.com/en/copilot/reference/ai-models/supported-models"
+# PRICING, PLANS_PAGE and MODELS_PAGE (apis.py): the models-and-pricing, plans and supported-models pages
 
 # Where the tables come from, with what each page must still show (verify.check_sources, weekly in CI; the
 # models' prices and plans are compared row by row there too: tests/test_vendor_pages.py).
@@ -210,7 +210,8 @@ class CopilotPlugin(AssistantPlugin):
     vendor = "GitHub"
     signup = "https://github.com/settings/personal-access-tokens/new"
     order = 503
-    api = "2.0"
+    api = "2.2"  # 2.2: what it attaches to (apis)
+    apis = APIS  # the Copilot SDK, what it reaches and the runtime it drives (apis.py)
     assistant = CopilotAssistant
     plans = PLANS
     models = MODELS

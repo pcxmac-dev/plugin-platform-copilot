@@ -1,7 +1,7 @@
 # plugin-platform-copilot
 
 Copilot for [Liminal](https://github.com/pcxmac-dev/liminal-charts): an AI assistant plugin (plugin API
-2.0, `liminal_libs.assistants`, a platform plugin) that evaluates standardized arguments (a question
+2.2, `liminal_libs.assistants`, a platform plugin) that evaluates standardized arguments (a question
 over headlines, an assessment, a report; a judge over earlier answers) through GitHub Copilot on your
 own GitHub token, with Copilot's plans, models and prices written in.
 
@@ -27,6 +27,22 @@ folder.
 GitHub Models (`models.github.ai`), the OpenAI-compatible endpoint that once answered on a GitHub
 token, was retired on 2026-07-30 for every customer; the chat endpoints and token exchange GitHub's own
 editors use are not documented for anyone else. Neither is used.
+
+## Its API
+
+The plugin attaches to GitHub's [Copilot SDK](https://docs.github.com/en/copilot/how-tos/copilot-sdk) (the Python
+[reference](https://github.com/github/copilot-sdk/blob/main/python/README.md) and
+[source](https://github.com/github/copilot-sdk), `github-copilot-sdk` 1.x): `CopilotClient(...)`, `start`,
+`get_auth_status`, `list_models`, `rpc.account.get_quota`, `create_session` and `send_and_wait`, `disconnect`, `stop`.
+What it reaches is GitHub Copilot: its [models and prices](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing)
+in AI credits, its [plans](https://docs.github.com/en/copilot/get-started/plans) and their allowances (GitHub publishes
+no rate limits), its API service through the runtime; its status is [GitHub's](https://www.githubstatus.com/). The local
+runtime it drives is the Copilot CLI's ([bundled](https://docs.github.com/en/copilot/how-tos/copilot-sdk/setup/bundled-cli)),
+a child process the SDK speaks JSON-RPC to over stdio.
+
+`CopilotPlugin.apis` (`apis.py`, plugin API 2.2) says this on the plugin's page as two cards, the SDK and the runtime,
+with every other part of the SDK (hooks, MCP servers, custom agents and skills, your own model keys, persistence,
+observability, Copilot's REST API ...) and the calls the plugin makes among the others, as read on 2026-11-11.
 
 ## Setup
 

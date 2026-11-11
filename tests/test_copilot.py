@@ -31,7 +31,7 @@ def test_it_loads_as_an_assistant_plugin(installed):
     found = installed(ASSISTANT)
     assert list(found) == ["copilot"] and isinstance(found["copilot"], CopilotPlugin)
     p = found["copilot"]
-    assert p.KIND == "assistant" and p.SYSTEM == "platform" and p.api == "2.0" and p.vendor == "GitHub"
+    assert p.KIND == "assistant" and p.SYSTEM == "platform" and p.api == "2.2" and p.vendor == "GitHub"
     assert p.origin == "package: plugin_platform_copilot"
     import liminal_libs
 

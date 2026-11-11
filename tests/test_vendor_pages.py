@@ -2,8 +2,8 @@
 written-in figure looked for (verify.check_sources); and, from the pages served as markdown, every
 model's prices, every model's plans, its place in the Copilot CLI (the SDK's runtime) and every plan's
 allowance compared with the tables row by row. A figure gone or changed means the table is stale and
-the plugin needs a release; the failure names the model or the plan. Nothing is read on a push or a
-pull request."""
+the plugin needs a release; the failure names the model or the plan. And every address on the plugin's
+cards (apis.py) asked once. Nothing is read on a push or a pull request."""
 from __future__ import annotations
 
 import os
@@ -126,3 +126,11 @@ def test_every_plans_allowance_is_still_the_plans_pages():
         if want not in [r[:3] for r in table]:
             wrong.append(f"{title}: the page's rows {[r for r in table if r[0] == title]}, the table's {want[1:]}")
     assert wrong == [], "the table is stale:\n" + "\n".join(wrong)
+
+
+def test_every_address_on_the_cards_answers():
+    """Each address on the cards asked once (sources.apis.dead_links)."""
+    from liminal_libs.sources.apis import dead_links
+    from plugin_platform_copilot.apis import APIS
+
+    assert dead_links(APIS) == []
