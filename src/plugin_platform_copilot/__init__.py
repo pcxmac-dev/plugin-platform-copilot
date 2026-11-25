@@ -57,11 +57,11 @@ from .runtime import SDK_WRITTEN_FOR, SdkRuntime
 __all__ = ["ASSISTANT", "CopilotPlugin", "CopilotAssistant", "PLANS", "MODELS", "SOURCES", "VERIFIED", "AUTO",
            "INDIVIDUAL", "ORGANIZATION", "PRICING", "PLANS_PAGE", "MODELS_PAGE", "RUNTIME_HOME", "SDK_WRITTEN_FOR", "APIS"]
 
-VERIFIED = "2026-11-08"  # the day the tables below were checked against SOURCES
+VERIFIED = "2026-11-25"  # the day the tables below were checked against SOURCES
 RUNTIME_HOME = "assistants/copilot/"  # the Copilot runtime's home (COPILOT_HOME), in the data folder
 
 # Copilot's plans (docs.github.com/en/copilot/get-started/plans and .../billing-and-usage/individuals/billing,
-# 2026-11-08): usage is billed in GitHub AI Credits (1 AI credit = $0.01 USD), tokens at each model's
+# 2026-11-25): usage is billed in GitHub AI Credits (1 AI credit = $0.01 USD), tokens at each model's
 # published rate; every plan has a monthly allowance (renewed on the 1st, 00:00 UTC, unused credits lost)
 # except Copilot access, metered from the first use. GitHub publishes no rate limits for any plan.
 # The paid individual plans: the price a month in dollars, the base credits, the flex allotment, the total.
@@ -89,7 +89,8 @@ PLANS = (
          price="free for verified students: an allowance of GitHub AI Credits a month (its size not published)",
          note="auto model selection only (Copilot chooses the model)"),
     Plan("pro", "Copilot Pro", price=_individual("pro"), spend_cap=BUDGET,
-         note="a selection of models: not Claude Opus or Fable, GPT-6 Astra, the Sol models or Gemini 4 Argon"),
+         note="a selection of models: not Claude Opus or Fable, the Astra and Sol models, or Gemini 4 Argon, Carbon "
+              "or Neon"),
     Plan("pro-plus", "Copilot Pro+", price=_individual("pro-plus"), spend_cap=BUDGET, note="every model in the table"),
     Plan("max", "Copilot Max", price=_individual("max"), spend_cap=BUDGET,
          note="every model in the table, with priority access to the premium ones"),
@@ -108,42 +109,49 @@ PLANS = (
 PAID = ("pro", "pro-plus", "max", "business", "enterprise", "access")  # every paid plan reaches these (Pro's selection)
 PREMIUM = ("pro-plus", "max", "business", "enterprise", "access")  # Pro+ and up: not on Pro
 MILLION = 1_000_000  # the context window Copilot's CLI runtime (the SDK's) offers the models that have one that long
-FABLE = ("Powerful; a cache write $12.50; Anthropic keeps its prompts and answers by default (its safety classifiers); "
+FABLE = ("Powerful; a cache write ${}; Anthropic keeps its prompts and answers by default (its safety classifiers); "
          "in an organization an administrator enables it")
 
 # Copilot's text models (docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing and
-# .../ai-models/supported-models, 2026-11-08), with the ids Copilot's runtime takes: prices per million
+# .../ai-models/supported-models, 2026-11-25), with the ids Copilot's runtime takes: prices per million
 # tokens at the default tier (input, output, a cached input token), the context window, the plans that
 # reach it, whether its reasoning level can be set (COPILOT_EFFORT); auto first (the default), then the
 # cheapest first. Cache writes (Anthropic's models, GPT-5.6 and later) have a price of their own, in the
-# notes: an answer's cost here counts them as input. Left out: GPT-5.4 nano (only in the Codex extension
-# for VS Code, not in the CLI), Claude Opus 4.8 fast mode (a preview), Claude Sonnet 4.6 (retired
-# 2026-09-01, kept on annual plans only).
+# notes: an answer's cost here counts them as input. Left out: GPT-5.4 nano (in no client's list, the
+# CLI's among them), Claude Opus 4.8 fast mode (a preview), Claude Sonnet 4.6 (retired 2026-09-01) and
+# Claude Opus 4.8 (retired 2026-11-16), both kept on annual plans only, and Claude Sonnet 4 (retired
+# 2026-05-01, still priced). Retired on 2026-11-16 and dropped from the table (0.2.1): GPT-5.6 Terra and
+# Claude Opus 5; Claude Opus 4.8 with them (annual plans only).
 MODELS = (
     Model(AUTO, "Auto (Copilot chooses)", 0.0, 0.0,
           note="Copilot picks the model for each prompt among those the plan and its policies allow, and bills it at that "
                "model's rate (paid plans: 10% off in Copilot Chat and cloud agent); an answer names the model chosen and "
                "costs that model's price here; the only model on Free and Student"),
+    Model("mai-code-2-flash", "MAI Code 2 Flash", 0.05, 0.25, 0.005, MILLION, PAID, True,
+          note="Lightweight, Microsoft's, the cheapest; promotional prices until 2027-05-17, then $0.10 in, $0.01 cached "
+               "and $0.50 out; its checkpoints change over time"),
     Model("gpt-6-luna", "GPT-6 Luna", 0.10, 0.50, 0.01, MILLION, PAID, True,
-          note="Lightweight, the cheapest; prompts over 272K tokens cost $0.20 in and $0.75 out; a cache write $0.125"),
+          note="Lightweight; prompts over 272K tokens cost $0.20 in and $0.75 out; a cache write $0.125"),
     Model("claude-haiku-5.5", "Claude Haiku 5.5", 0.10, 0.50, 0.01, MILLION, PAID, True,
           note="Lightweight; prompts over 100K tokens cost $0.50 in and $2.50 out; a cache write $0.125"),
     Model("gpt-5.6-luna", "GPT-5.6 Luna", 0.20, 1.20, 0.02, MILLION, PAID, True,
           note="Lightweight; prompts over 200K tokens cost $0.40 in and $1.80 out; a cache write $0.25"),
     Model("mai-code-1.1-flash", "MAI-Code-1.1-Flash", 0.20, 1.20, 0.02, None, PAID,
           note="Lightweight, Microsoft's; its checkpoints change over time"),
+    Model("mai-code-2", "MAI Code 2", 0.50, 2.50, 0.025, MILLION, PAID, True,
+          note="Powerful, Microsoft's; promotional prices until 2027-05-17, then $1.00 in, $0.05 cached and $5.00 out; "
+               "its checkpoints change over time"),
     Model("gemini-3.8-flash", "Gemini 3.8 Flash", 0.75, 3.75, 0.075, None, PAID,
           note="Versatile; promotional prices through 2026-12-31"),
     Model("claude-haiku-4.5", "Claude Haiku 4.5", 1.00, 5.00, 0.10, None, PAID, note="Versatile; a cache write $1.25"),
     Model("gpt-6.1-terra", "GPT-6.1 Terra", 1.00, 5.00, 0.05, MILLION, PAID, True,
           note="Versatile; prompts over 272K tokens cost $2.00 in and $7.50 out; a cache write $1.25"),
+    Model("gemini-4-hydrogen", "Gemini 4 Hydrogen", 1.50, 7.50, 0.075, None, PAID, note="Versatile"),
     Model("gpt-5.3-codex", "GPT-5.3-Codex", 1.75, 14.00, 0.175, MILLION, PAID, True,
           note="Powerful; Copilot's long-term support model, the one used when no other is available"),
     Model("claude-sonnet-5", "Claude Sonnet 5", 2.00, 10.00, 0.20, MILLION, PAID, True, note="Versatile; a cache write $2.50"),
     Model("claude-sonnet-5.5", "Claude Sonnet 5.5", 2.00, 10.00, 0.10, MILLION, PAID, True,
           note="Versatile; a cache write $2.50"),
-    Model("gpt-5.6-terra", "GPT-5.6 Terra", 2.00, 12.00, 0.20, MILLION, PAID, True,
-          note="Versatile; prompts over 272K tokens cost $4.00 in and $18.00 out; a cache write $2.50"),
     Model("grok-4.5", "Grok 4.5", 2.00, 6.00, 0.50, None, PAID,
           note="Versatile; prompts over 200K tokens cost $4.00 in and $12.00 out"),
     Model("grok-4.6", "Grok 4.6", 2.00, 6.00, 0.50, None, PAID,
@@ -154,20 +162,25 @@ MODELS = (
           note="Powerful; prompts over 272K tokens cost $4.00 in and $15.00 out; a cache write $2.50"),
     Model("gpt-6.1-sol", "GPT-6.1 Sol", 2.00, 10.00, 0.10, MILLION, PREMIUM, True,
           note="Powerful; prompts over 272K tokens cost $4.00 in and $15.00 out; a cache write $2.50"),
+    Model("gpt-6.2-sol", "GPT-6.2 Sol", 2.00, 10.00, 0.10, MILLION, PREMIUM, True,
+          note="Powerful; prompts over 272K tokens cost $4.00 in and $15.00 out; a cache write $2.50"),
     Model("gemini-4-argon", "Gemini 4 Argon", 2.00, 10.00, 0.10, None, PREMIUM,
           note="Powerful; promotional prices until 2026-12-01"),
+    Model("gemini-4-carbon", "Gemini 4 Carbon", 2.00, 10.00, 0.10, None, PREMIUM,
+          note="Powerful; promotional prices until 2026-12-01, then $4.00 in, $0.20 cached and $20.00 out"),
     Model("kimi-k3", "Kimi K3", 3.00, 15.00, 0.30, MILLION, PAID, True, note="Powerful, Moonshot AI's"),
+    Model("gemini-4-neon", "Gemini 4 Neon", 3.00, 15.00, 0.15, None, PREMIUM, note="Versatile"),
     Model("gpt-5.6-sol", "GPT-5.6 Sol", 4.00, 20.00, 0.40, MILLION, PREMIUM, True,
           note="Powerful; prompts over 272K tokens cost $8.00 in and $30.00 out; a cache write $5.00"),
     Model("claude-opus-5.5", "Claude Opus 5.5", 4.00, 20.00, 0.20, MILLION, PREMIUM, True,
           note="Powerful; a cache write $5.00"),
-    Model("claude-opus-4.8", "Claude Opus 4.8", 5.00, 25.00, 0.50, MILLION, PREMIUM, True,
-          note="Powerful; a cache write $6.25"),
-    Model("claude-opus-5", "Claude Opus 5", 5.00, 25.00, 0.50, MILLION, PREMIUM, True, note="Powerful; a cache write $6.25"),
+    Model("gpt-6.2-astra", "GPT-6.2 Astra", 8.00, 40.00, 0.40, MILLION, PREMIUM, True,
+          note="Powerful, OpenAI's; prompts over 272K tokens cost $16.00 in and $60.00 out; a cache write $10.00"),
+    Model("claude-fable-5.2", "Claude Fable 5.2", 8.00, 40.00, 0.20, MILLION, PREMIUM, True, note=FABLE.format("10.00")),
     Model("gpt-6-astra", "GPT-6 Astra", 10.00, 50.00, 1.00, MILLION, PREMIUM, True,
-          note="Powerful, OpenAI's flagship; prompts over 272K tokens cost $20.00 in and $75.00 out; a cache write $12.50"),
-    Model("claude-fable-5", "Claude Fable 5", 10.00, 50.00, 1.00, MILLION, PREMIUM, True, note=FABLE),
-    Model("claude-fable-5.1", "Claude Fable 5.1", 10.00, 50.00, 0.25, MILLION, PREMIUM, True, note=FABLE),
+          note="Powerful, OpenAI's; prompts over 272K tokens cost $20.00 in and $75.00 out; a cache write $12.50"),
+    Model("claude-fable-5", "Claude Fable 5", 10.00, 50.00, 1.00, MILLION, PREMIUM, True, note=FABLE.format("12.50")),
+    Model("claude-fable-5.1", "Claude Fable 5.1", 10.00, 50.00, 0.25, MILLION, PREMIUM, True, note=FABLE.format("12.50")),
 )
 
 # PRICING, PLANS_PAGE and MODELS_PAGE (apis.py): the models-and-pricing, plans and supported-models pages

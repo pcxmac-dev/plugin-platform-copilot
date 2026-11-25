@@ -58,7 +58,7 @@ def test_the_tables_hold_together():
     free, student, pro, plus = (ASSISTANT.plan_of(n) for n in ("free", "student", "pro", "pro-plus"))
     assert ASSISTANT.free_plan is free and ASSISTANT.reach(free) == ASSISTANT.reach(student) == ("auto",)
     ids = [m.id for m in MODELS]
-    assert ids[0] == ASSISTANT.default_model == "auto" and len(set(ids)) == len(ids) == 26  # auto and 25 text models
+    assert ids[0] == ASSISTANT.default_model == "auto" and len(set(ids)) == len(ids) == 31  # auto and 30 text models
     assert all(re.fullmatch(r"[a-z0-9][a-z0-9.-]*", i) for i in ids)  # Copilot's own ids: claude-haiku-5.5, gpt-6.1-sol
     assert set(ASSISTANT.reach(plus)) == set(ids) and ASSISTANT.reach(ASSISTANT.plan_of("access")) == ASSISTANT.reach(plus)
     assert "claude-opus-5.5" not in ASSISTANT.reach(pro) and {"auto", "gpt-6-luna", "claude-sonnet-5"} <= set(ASSISTANT.reach(pro))
@@ -71,7 +71,7 @@ def test_the_tables_hold_together():
     assert ASSISTANT.cost("auto", Usage(10, 10)) is None  # billed at the rate of the model it chose
     assert INDIVIDUAL["pro"] == (10, 1_000, 500, 1_500) and "1,500 AI credits" in pro.price and "7,000" in plus.price
     assert ORGANIZATION == {"business": (19, 1_900), "enterprise": (39, 3_900)}
-    assert copilot.VERIFIED == "2026-11-08" and ASSISTANT.verified == copilot.VERIFIED
+    assert copilot.VERIFIED == "2026-11-25" and ASSISTANT.verified == copilot.VERIFIED
     assert all(s.url.startswith(("https://docs.github.com/", "https://github.blog/")) and s.sentinel and s.markers
                for s in SOURCES)
     assert set(SOURCES[0].markers) == {m.title for m in paid}  # every model's name must stay on the pricing page

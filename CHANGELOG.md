@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 (2026-11-24)
+
+The tables read again from GitHub's pages (VERIFIED 2026-11-25): the weekly page check failed (the failed-tasks log,
+2026-11-23) because GitHub retired GPT-5.6 Terra, Claude Opus 5 and Claude Opus 4.8 on 2026-11-16 (Opus 4.8 stays on
+annual plans only, so it leaves the table as Claude Sonnet 4.6 did). Added, with the pricing page's prices and the
+models page's plans: GPT-6.2 Sol and GPT-6.2 Astra, Claude Fable 5.2, Gemini 4 Carbon, Gemini 4 Hydrogen and Gemini 4
+Neon, MAI Code 2 and MAI Code 2 Flash (30 text models, auto beside them). Pro's selection now leaves out Gemini 4 Carbon
+and Neon and the new Astra and Sol too. The plans, their prices and AI credits are unchanged; the default (auto) too.
+
 ## 0.2.0 (2026-11-11)
 
 Its API on its page (plugin API 2.2, liminal-libs 1.49.0; the user: "each plugin should reflect the the API its attached

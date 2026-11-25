@@ -63,7 +63,7 @@ observability, Copilot's REST API ...) and the calls the plugin makes among the 
   | --- | --- | --- | --- | --- |
   | `free` | Copilot Free | free | an allowance (its size not published) | auto only |
   | `student` | Copilot Student | free for verified students | an allowance (not published) | auto only |
-  | `pro` | Copilot Pro | $10 a month | 1,500 (1,000 base, 500 flex) | a selection: no Opus, Fable, Sol, Astra or Gemini 4 Argon |
+  | `pro` | Copilot Pro | $10 a month | 1,500 (1,000 base, 500 flex) | a selection: no Opus, Fable, Sol, Astra or Gemini 4 Argon, Carbon or Neon |
   | `pro-plus` | Copilot Pro+ | $39 a month | 7,000 (3,900 base, 3,100 flex) | every model in the table |
   | `max` | Copilot Max | $100 a month | 20,000 (10,000 base, 10,000 flex) | every model, priority access |
   | `business` | Copilot Business | $19 a seat a month | 1,900 a user, pooled | as the organization's policies allow |
@@ -76,9 +76,9 @@ observability, Copilot's REST API ...) and the calls the plugin makes among the 
   GitHub publishes no rate limits for any plan.
 - Model: `COPILOT_MODEL`, `auto` by default (Copilot chooses the model for each prompt; the only one
   on Free and Student; an answer records the model that answered and costs that model's price). The
-  table holds Copilot's 25 text models with their ids, prices per million tokens (input, a cached
-  input token, output), plans, context and reasoning: GPT-6 Luna and Claude Haiku 5.5 the cheapest
-  ($0.10 in, $0.50 out), up to GPT-6 Astra and Claude Fable 5.1 ($10 and $50). `COPILOT_EFFORT` sets
+  table holds Copilot's 30 text models with their ids, prices per million tokens (input, a cached
+  input token, output), plans, context and reasoning: MAI Code 2 Flash the cheapest ($0.05 in, $0.25
+  out, a promotional price), up to GPT-6 Astra and Claude Fable 5.1 ($10 and $50). `COPILOT_EFFORT` sets
   the reasoning level where the model takes one.
 - Caps on this machine, every database together: `COPILOT_REQUESTS_PER_DAY` (50),
   `COPILOT_TOKENS_PER_DAY` (200,000), `COPILOT_MAX_OUTPUT_TOKENS` (1,024: kept for the Plugins view;
